@@ -6,6 +6,10 @@ ARG ARCH_NAME
 ENV TT_METAL_VERSION=${TT_METAL_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 
+LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
+LABEL org.opencontainers.image.description="Run a basic matmul-like ttnn test on device"
+LABEL org.opencontainers.image.licenses=MIT
+
 ## install tt-metal from wheel
 RUN pip install https://github.com/tenstorrent/tt-metal/releases/download/${TT_METAL_VERSION}/metal_libs-$(echo ${TT_METAL_VERSION} | sed -e 's/[v-]//g')+$(echo ${ARCH_NAME} | sed -e 's/_/./g')-cp38-cp38-linux_x86_64.whl
 
