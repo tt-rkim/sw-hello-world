@@ -45,5 +45,5 @@ jobs:
         run: |
           cd 
           docker buildx imagetools create \
-          --tag ghcr.io/tt-rkim/tt-metal-hello-world:latest:${{ matrix.arch }} \
-          tt-metal-hello-world:latest
+          --tag ghcr.io/tt-rkim/tt-metal-hello-world:latest-${{ matrix.arch }} \
+          tt-metal-hello-world:latest-${{ matrix.arch }}
