@@ -36,10 +36,11 @@ jobs:
         with:
           file: tt-metal/Dockerfile
           platforms: linux/amd64
-          push: true
+          push: false
           build-args: 'ARCH_NAME=${{ matrix.arch }}'
-          tags: user/app:latest-${{ matrix.arch }}
+          tags: tt-metal-hello-world:latest-${{ matrix.arch }}
 
+          # prob will fail bc og docker registry has nothing
       - name: Push image to GHCR
         run: |
           cd 
