@@ -15,7 +15,6 @@ jobs:
         arch:
           - grayskull
           - wormhole_b0
-          - blackhole
     steps:
       # to help build against other platforms
       - name: Set up QEMU
