@@ -10,6 +10,9 @@ on:
 jobs:
   build-metal-image:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
     strategy:
       matrix:
         arch:
@@ -36,13 +39,7 @@ jobs:
         with:
           file: tt-metal/Dockerfile
           platforms: linux/amd64
+          pull: true
           push: true
           build-args: 'ARCH_NAME=${{ matrix.arch }}'
-          tags: ghcr.io/tt-rkim/tt-metal-hello-world:latest-${{ matrix.arch }}
-
-          # prob will fail bc og docker registry has nothing
-      - name: Push image to GHCR
-        run: |
-          docker buildx imagetools create \
-          --tag ghcr.io/tt-rkim/tt-metal-hello-world:latest-${{ matrix.arch }} \
-          tt-metal-hello-world:latest-${{ matrix.arch }}
+          tags: ghcr.io/tt-rkim/sw-hello-world/tt-metal-hello-world:latest-${{ matrix.arch }}
