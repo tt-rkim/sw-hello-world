@@ -10,16 +10,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-metal-image:
+  build-image:
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     strategy:
       matrix:
-        arch:
-          - grayskull
-          - wormhole_b0
+        arch: [grayskull, wormhole_b0]
+        repo: [tt-metal, tt-umd]
     steps:
       # to help build against other platforms
       - name: Set up QEMU
@@ -39,9 +38,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          file: tt-metal/Dockerfile
+          file: ${{ matrix.repo }}/Dockerfile
           platforms: linux/amd64
           pull: true
           push: true
           build-args: 'ARCH_NAME=${{ matrix.arch }}'
-          tags: ghcr.io/tt-rkim/sw-hello-world/tt-metal-hello-world:latest-${{ matrix.arch }}
+          tags: ghcr.io/tt-rkim/sw-hello-world/${{ matrix.repo }}-hello-world:latest-${{ matrix.arch }}
