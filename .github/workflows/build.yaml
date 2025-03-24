@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # Docker-provided build framework to build against other platforms
-      - uses: ./.github/actions/build-docker-image
+      - uses: ./.github/actions/build-docker-image@${{ github.sha }}
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
