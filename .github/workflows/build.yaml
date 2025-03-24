@@ -24,7 +24,7 @@ jobs:
       - name: Show latest tag for logging and debug
         run: echo "::notice title=latest-metal-tag::Latest metal tag is ${{ steps.get-latest-tag.outputs.latest-tag }}"
   build-image:
-    neds: get-build-info
+    needs: get-build-info
     runs-on: ubuntu-latest
     permissions:
       packages: write
