@@ -10,37 +10,37 @@ on:
   workflow_dispatch:
 
 jobs:
+  get-build-info:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      latest-tag: ${{ steps.get-latest-tag.outputs.latest-tag }}
+    steps:
+      - name: Get latest metal tag
+        id: get-latest-tag
+        run: |
+          latestTag=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/tenstorrent/tt-metal/releases" | jq -r ".[0].name")
+          echo "latest-tag=$latestTag" >> "$GITHUB_OUTPUT"
+      - name: Show latest tag for logging and debug
+        run: echo "::notice title=latest-metal-tag::Latest metal tag is ${{ steps.get-latest-tag.outputs.latest-tag }}"
   build-image:
+    neds: get-build-info
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
     strategy:
       matrix:
-        arch: [grayskull, wormhole_b0]
+        arch: [wormhole_b0]
         repo: [tt-metal, tt-umd]
     steps:
-      # to help build against other platforms
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - uses: actions/checkout@v4
 
       # Docker-provided build framework to build against other platforms
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: ./.github/actions/build-docker-image
         with:
-          registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          file: ${{ matrix.repo }}/Dockerfile
-          platforms: linux/amd64
-          pull: true
-          push: true
+          dockerfile: ${{ matrix.repo }}/Dockerfile
           build-args: 'ARCH_NAME=${{ matrix.arch }}'
-          tags: ghcr.io/tt-rkim/sw-hello-world/${{ matrix.repo }}-hello-world:latest-${{ matrix.arch }}
+          tag: ghcr.io/tt-rkim/sw-hello-world/${{ matrix.repo }}-hello-world:latest-${{ matrix.arch }}
