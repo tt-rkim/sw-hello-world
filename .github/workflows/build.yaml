@@ -23,24 +23,21 @@ jobs:
           echo "latest-tag=$latestTag" >> "$GITHUB_OUTPUT"
       - name: Show latest tag for logging and debug
         run: echo "::notice title=latest-metal-tag::Latest metal tag is ${{ steps.get-latest-tag.outputs.latest-tag }}"
-  build-image:
+  build-tg-image:
     needs: get-build-info
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
-    strategy:
-      matrix:
-        arch: [wormhole_b0]
-        repo: [tt-metal, tt-umd]
     steps:
       - uses: actions/checkout@v4
 
       # Docker-provided build framework to build against other platforms
       - uses: ./.github/actions/build-docker-image
+        id: build-docker-image
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: ${{ matrix.repo }}/Dockerfile
-          build-args: 'ARCH_NAME=${{ matrix.arch }}'
-          tag: ghcr.io/tt-rkim/sw-hello-world/${{ matrix.repo }}-hello-world:latest-${{ matrix.arch }}
+          dockerfile: tt-metal/Dockerfile.tg
+          build-args: 'TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-tag }}'
+          tag: ghcr.io/tt-rkim/sw-hello-world/tg-smoke-test:latest

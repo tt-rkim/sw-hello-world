@@ -1,0 +1,22 @@
+ARG TT_METAL_VERSION=v0.57.0-rc34
+FROM ghcr.io/tenstorrent/tt-metal/tt-metalium/tt-metalium-ubuntu-20.04-amd64-release:${TT_METAL_VERSION} as base
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
+LABEL org.opencontainers.image.description="Run a TG smoke test"
+LABEL org.opencontainers.image.licenses=MIT
+
+## add user
+RUN adduser --uid 1000 --shell /bin/bash user
+USER user
+
+RUN git checkout https://github.com/tenstorrent/tt-metal --branch ${TT_METAL_VERSION} /home/user/tt-metal
+
+WORKDIR /home/user/tt-metal
+
+ENV LD_LIBRARY_PATH=/home/user/tt-metal
+ENV PYTHONPATH=/home/user/tt-metal
+
+# ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
+CMD pytest tests/ttnn/unit_tests/operations/ccl/test_ccl_async_TG_llama.py::test_all_reduce_tg_llama -k ff2

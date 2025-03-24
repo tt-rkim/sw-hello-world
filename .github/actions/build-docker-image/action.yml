@@ -26,6 +26,10 @@ inputs:
     description: 'Registry for container'
     required: false
     default: ghcr.io
+outputs:
+  docker-image-tag:
+    description: "Full tag name of docker-image, though it was an input"
+    value: ${{ inputs.tag }}
 
 runs:
   using: "composite"
