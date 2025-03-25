@@ -11,7 +11,7 @@ LABEL org.opencontainers.image.licenses=MIT
 RUN adduser --uid 1000 --shell /bin/bash user
 USER user
 
-RUN git checkout https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION /home/user/tt-metal
+RUN git checkout https://github.com/tenstorrent/tt-metal --branch "$TT_METAL_VERSION" /home/user/tt-metal
 
 WORKDIR /home/user/tt-metal
 
