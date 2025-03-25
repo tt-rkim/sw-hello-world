@@ -20,4 +20,5 @@ WORKDIR /home/user/tt-metal
 ENV PYTHONPATH=/home/user/tt-metal
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
+RUN pytest --collect-only tests/ttnn/unit_tests
 CMD pytest tests/ttnn/unit_tests/operations/ccl/test_ccl_async_TG_llama.py::test_all_reduce_tg_llama -k ff2
