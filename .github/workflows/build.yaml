@@ -42,7 +42,7 @@ jobs:
         id: get-run-id
         if: always()
         run: |
-          tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }} --jq '.object.sha' | xargs -I{} )
+          tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }} --jq '.object.sha')
           echo "SHA of tag: $tagSha"
           commitSha=$(gh api repos/tenstorrent/tt-metal/git/tags/$tagSha --jq '.object.sha')
           echo "SHA of commit: $commitSha"
