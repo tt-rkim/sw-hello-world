@@ -42,10 +42,12 @@ jobs:
         id: get-run-id
         if: always()
         run: |
-          tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/v0.57.0-rc60 --jq '.object.sha' | xargs -I{} gh api repos/tenstorrent/tt-metal/git/tags/{} --jq '.object.sha')
+          tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }} --jq '.object.sha' | xargs -I{} )
           echo "SHA of tag: $tagSha"
-          commitSha=$(gh run list --repo tenstorrent/tt-metal --commit $tagSha --limit 1000 | grep "All post-commit tests" | awk '{print $11}')
-          echo "commit-sha=$commitSha" >> "$GITHUB_OUTPUT"
+          commitSha=$(gh api repos/tenstorrent/tt-metal/git/tags/$tagSha --jq '.object.sha')
+          echo "SHA of commit: $commitSha"
+          runId=$(gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 | grep "All post-commit tests" | awk '{print $11}')
+          echo "run-id=$runId" >> "$GITHUB_OUTPUT"
   build-tg-image:
     needs: get-build-info
     runs-on: ubuntu-latest
