@@ -17,6 +17,7 @@ jobs:
     timeout-minutes: 3
     outputs:
       latest-metal-tag: ${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }}
+      commit-sha: ${{ steps.get-run-id.outputs.commit-sha }}
     steps:
       - name: Get latest metal tag
         id: get-latest-metal-tag
@@ -25,6 +26,21 @@ jobs:
           echo "latest-metal-tag=$latestTag" >> "$GITHUB_OUTPUT"
       - name: Show latest tag for logging and debug
         run: echo "::notice title=latest-metal-tag::Latest metal tag is ${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }}"
+      - name: Download artifacts from metal
+        id: download-artifacts
+        uses: actions/download-artifact@v4
+        with:
+          repository: tenstorrent/tt-metal
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: TTMetal_build_any
+          run-id: 14366769140
+      - name: Get run id of APC run
+        id: get-run-id
+        if: always()
+        run: |
+          tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/v0.57.0-rc60 --jq '.object.sha' | xargs -I{} gh api repos/tenstorrent/tt-metal/git/tags/{} --jq '.object.sha')
+          commitSha=$(gh run list --repo tenstorrent/tt-metal --commit $tagSha --limit 1000 | grep "All post-commit tests" | awk '{print $11}')
+          echo "commit-sha=$commitSha" >> "$GITHUB_OUTPUT"
   build-tg-image:
     needs: get-build-info
     runs-on: ubuntu-latest
