@@ -49,7 +49,7 @@ jobs:
           echo "SHA of commit: $commitSha"
           runId=$(gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 | grep "All post-commit tests" | awk '{print $11}')
           echo "APC run id of commit: $runID"
-          if [ -z "$runID" ];
+          if [ -z "$runID" ]; then
             echo "Run ID should not be empty"
             exit 1
           fi
