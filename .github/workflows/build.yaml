@@ -41,6 +41,8 @@ jobs:
       - name: Get run id of APC run
         id: get-run-id
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }} --jq '.object.sha')
           echo "SHA of tag: $tagSha"
