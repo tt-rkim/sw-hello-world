@@ -39,6 +39,7 @@ jobs:
         if: always()
         run: |
           tagSha=$(gh api repos/tenstorrent/tt-metal/git/ref/tags/v0.57.0-rc60 --jq '.object.sha' | xargs -I{} gh api repos/tenstorrent/tt-metal/git/tags/{} --jq '.object.sha')
+          echo "SHA of tag: $tagSha"
           commitSha=$(gh run list --repo tenstorrent/tt-metal --commit $tagSha --limit 1000 | grep "All post-commit tests" | awk '{print $11}')
           echo "commit-sha=$commitSha" >> "$GITHUB_OUTPUT"
   build-tg-image:
