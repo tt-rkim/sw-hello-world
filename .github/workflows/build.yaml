@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 3
     outputs:
       latest-metal-tag: ${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }}
-      commit-sha: ${{ steps.get-run-id.outputs.commit-sha }}
+      run-id: ${{ steps.get-run-id.outputs.run-id }}
     steps:
       - name: Get latest metal tag
         id: get-latest-metal-tag
@@ -30,14 +30,6 @@ jobs:
           echo "latest-metal-tag=$latestTag" >> "$GITHUB_OUTPUT"
       - name: Show latest tag for logging and debug
         run: echo "::notice title=latest-metal-tag::Latest metal tag is ${{ steps.get-latest-metal-tag.outputs.latest-metal-tag }}"
-      - name: Download artifacts from metal
-        id: download-artifacts
-        uses: actions/download-artifact@v4
-        with:
-          repository: tenstorrent/tt-metal
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          name: TTMetal_build_any
-          run-id: 14366769140
       - name: Get run id of APC run
         id: get-run-id
         env:
@@ -73,3 +65,32 @@ jobs:
           build-args: 'TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}'
           # Doesn't use latest yet... TODO
           tag: ghcr.io/tt-rkim/sw-hello-world/tg-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}
+  build-6u-image:
+    needs: get-build-info
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifacts from metal
+        id: download-artifacts
+        uses: actions/download-artifact@v4
+        with:
+          repository: tenstorrent/tt-metal
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # 22.04 artifact... we'll probably need to key on that in the original action in metal
+          name: TTMetal_build_any
+          run-id: ${{ needs.get-build-info.outputs.run-id }}
+          path: ${{ github.workspace }}/_tt-metal
+      - run: ls -hal _tt-metal
+      # Docker-provided build framework to build against other platforms
+      - uses: ./.github/actions/build-docker-image
+        id: build-docker-image
+        with:
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: tt-metal/Dockerfile.6u
+          build-args: 'TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}'
+          # Doesn't use latest yet... TODO
+          tag: ghcr.io/tt-rkim/sw-hello-world/6u-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}
