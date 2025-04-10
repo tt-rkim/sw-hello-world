@@ -47,7 +47,9 @@ jobs:
           echo "SHA of tag: $tagSha"
           commitSha=$(gh api repos/tenstorrent/tt-metal/git/tags/$tagSha --jq '.object.sha')
           echo "SHA of commit: $commitSha"
+          sleep 5
           gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 --json workflowName,databaseId
+          sleep 5
           runId=$(gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 --json workflowName,databaseId --jq '[.[] | select(.workflowName == "All post-commit tests")] | .[0].databaseId')
           echo "APC run id of commit: $runID"
           if [ -z "$runID" ]; then
