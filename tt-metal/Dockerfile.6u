@@ -20,6 +20,7 @@ WORKDIR /home/user/tt-metal
 
 ENV PYTHONPATH=/home/user/tt-metal
 ENV LD_LIBRARY_PATH=/home/user/tt-metal/build/lib
+ENV TT_METAL_HOME=/home/user/tt-metal
 
 RUN ls -hal
 
@@ -30,4 +31,4 @@ RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 TT_METAL_SLOW_DISPATCH_MODE=1 ./build
 RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardFixture.*" --gtest_list_tests
 RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardProgramFixture.*" --gtest_list_tests
 RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardBufferFixture.ShardedBufferLarge*ReadWrites" --gtest_list_tests
-CMD TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 TT_METAL_SLOW_DISPATCH_MODE=1 ./build/test/tt_metal/tt_fabric/fabric_unit_tests --gtest_filter="ControlPlaneFixture.TestQuantaGalaxyControlPlaneInit"
+CMD TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 TT_METAL_SLOW_DISPATCH_MODE=1 ./build/test/tt_metal/tt_fabric/fabric_unit_tests --gtest_filter="ControlPlaneFixture.TestQuantaGalaxyControlPlaneInit" && TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardFixture.*" && TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardProgramFixture.*" && TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardBufferFixture.ShardedBufferLarge*ReadWrites"
