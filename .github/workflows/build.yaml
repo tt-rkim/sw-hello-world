@@ -83,7 +83,7 @@ jobs:
           name: TTMetal_build_any
           run-id: ${{ needs.get-build-info.outputs.run-id }}
       - run: mkdir -p _tt-metal
-      - run: tar -xvf -C _tt-metal
+      - run: tar -xvf -C _tt-metal/
       - run: ls -hal _tt-metal
       # Docker-provided build framework to build against other platforms
       - uses: ./.github/actions/build-docker-image
@@ -92,6 +92,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: tt-metal/Dockerfile.6u
-          build-args: 'TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}'
+          # We don't release a dev image every release tag
+          build-args: 'TT_METAL_VERSION=latest'
           # Doesn't use latest yet... TODO
           tag: ghcr.io/tt-rkim/sw-hello-world/6u-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}

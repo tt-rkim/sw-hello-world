@@ -1,5 +1,5 @@
-ARG TT_METAL_VERSION=v0.57.0-rc34
-FROM ghcr.io/tenstorrent/tt-metal/tt-metalium-ubuntu-22.04-amd64-release:${TT_METAL_VERSION} as base
+ARG TT_METAL_VERSION=latest
+FROM ghcr.io/tenstorrent/tt-metal/tt-metalium/ubuntu-22.04-dev-amd64:${TT_METAL_VERSION} as base
 
 ARG TT_METAL_VERSION
 
