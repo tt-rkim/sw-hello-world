@@ -49,8 +49,11 @@ jobs:
           echo "SHA of commit: $commitSha"
           sleep 5
           gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 --json workflowName,databaseId
+          sleep 3
+          gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 --json workflowName,databaseId > runs.json
+          jq '[.[] | select(.workflowName == "All post-commit tests")] | .[0].databaseId' runs.json
           sleep 5
-          runId=$(gh run list --repo tenstorrent/tt-metal --commit $commitSha --limit 1000 --json workflowName,databaseId --jq '[.[] | select(.workflowName == "All post-commit tests")] | .[0].databaseId')
+          runId=$(jq '[.[] | select(.workflowName == "All post-commit tests")] | .[0].databaseId' runs.json)
           echo "APC run id of commit: $runID"
           if [ -z "$runID" ]; then
             echo "Run ID should not be empty"
