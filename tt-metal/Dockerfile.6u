@@ -21,8 +21,10 @@ WORKDIR /home/user/tt-metal
 ENV PYTHONPATH=/home/user/tt-metal
 ENV LD_LIBRARY_PATH=/home/user/tt-metal/build/lib
 
-COPY _tt-metal/build .
-COPY _tt-metal/runtime .
+RUN ls -hal
+
+COPY _tt-metal/build/ ./build/
+COPY _tt-metal/runtime/ ./runtime/
 
 RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 TT_METAL_SLOW_DISPATCH_MODE=1 ./build/test/tt_metal/tt_fabric/fabric_unit_tests --gtest_filter="ControlPlaneFixture.TestQuantaGalaxyControlPlaneInit" --gtest_list_tests
 RUN TT_METAL_SKIP_ETH_CORES_WITH_RETRAIN=1 ./build/test/tt_metal/unit_tests_dispatch --gtest_filter="CommandQueueSingleCardFixture.*" --gtest_list_tests
