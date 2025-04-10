@@ -83,7 +83,7 @@ jobs:
           name: TTMetal_build_any
           run-id: ${{ needs.get-build-info.outputs.run-id }}
       - run: mkdir -p _tt-metal
-      - run: tar -xvf -C _tt-metal/
+      - run: tar -xvf ttm_any.tar -C _tt-metal/
       - run: ls -hal _tt-metal
       # Docker-provided build framework to build against other platforms
       - uses: ./.github/actions/build-docker-image
