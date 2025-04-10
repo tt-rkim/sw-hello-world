@@ -11,9 +11,9 @@ on:
   schedule:
     - cron: '0 12 * * *' # Hopefully after every release
 
-concurrency:
-  group: build-image-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: build-image-${{ github.ref }}
+#   cancel-in-progress: true
 
 jobs:
   get-build-info:
