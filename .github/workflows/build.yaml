@@ -93,6 +93,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: tt-metal/Dockerfile.6u
           # We don't release a dev image every release tag
-          build-args: 'TT_METAL_VERSION=latest'
+          # https://github.com/docker/build-push-action/issues/557#issuecomment-1030412477
+          build-args: |
+            TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}
+            TT_METAL_DEV_VERSION=latest
           # Doesn't use latest yet... TODO
           tag: ghcr.io/tt-rkim/sw-hello-world/6u-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}
