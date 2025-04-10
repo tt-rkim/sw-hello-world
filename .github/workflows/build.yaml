@@ -82,7 +82,8 @@ jobs:
           # 22.04 artifact... we'll probably need to key on that in the original action in metal
           name: TTMetal_build_any
           run-id: ${{ needs.get-build-info.outputs.run-id }}
-          path: ${{ github.workspace }}/_tt-metal
+      - run: mkdir -p _tt-metal
+      - run: tar -xvf -C _tt-metal
       - run: ls -hal _tt-metal
       # Docker-provided build framework to build against other platforms
       - uses: ./.github/actions/build-docker-image
