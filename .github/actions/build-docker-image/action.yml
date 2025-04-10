@@ -54,3 +54,4 @@ runs:
         push: true
         build-args: ${{ inputs.build-args }}
         tags: ${{ inputs.tag }}
+        context: ${{ github.workspace }}
