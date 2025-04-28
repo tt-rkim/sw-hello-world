@@ -9,11 +9,11 @@ LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
 LABEL org.opencontainers.image.description="Run a TG smoke test"
 LABEL org.opencontainers.image.licenses=MIT
 
+RUN apt install git git-lfs -y
+
 ## add user
 RUN adduser --uid 1000 --shell /bin/bash user
 USER user
-
-RUN apt install git git-lfs -y
 
 RUN git clone https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION /home/user/tt-metal
 
