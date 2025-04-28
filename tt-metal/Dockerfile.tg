@@ -1,5 +1,5 @@
 ARG TT_METAL_VERSION=v0.57.0-rc34
-FROM ghcr.io/tenstorrent/tt-metal/tt-metalium-ubuntu-22.04-amd64-release:${TT_METAL_VERSION} as base
+FROM ghcr.io/tenstorrent/tt-metal/tt-metalium-ubuntu-22.04-release-amd64:${TT_METAL_VERSION} as base
 
 ARG TT_METAL_VERSION
 
@@ -12,6 +12,8 @@ LABEL org.opencontainers.image.licenses=MIT
 ## add user
 RUN adduser --uid 1000 --shell /bin/bash user
 USER user
+
+RUN apt install git git-lfs -y
 
 RUN git clone https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION /home/user/tt-metal
 
