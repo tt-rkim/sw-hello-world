@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
 LABEL org.opencontainers.image.description="Run a TG smoke test"
 LABEL org.opencontainers.image.licenses=MIT
 
-RUN apt install git git-lfs -y
+RUN apt get update && apt install git git-lfs -y --no-install-recommends
 
 ## add user
 RUN adduser --uid 1000 --shell /bin/bash user
