@@ -71,6 +71,13 @@ jobs:
           # 22.04 artifact... we'll probably need to key on that in the original action in metal
           name: TTMetal_build_any
           run-id: ${{ needs.get-build-info.outputs.run-id }}
+      - name: 🧪 Download Python Wheel
+        uses: actions/download-artifact@v4
+        with:
+          repository: tenstorrent/tt-metal
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: eager-dist-ubuntu-22.04-any
+          run-id: ${{ needs.get-build-info.outputs.run-id }}
       - run: mkdir -p _tt-metal
       - run: tar -xvf ttm_any.tar -C _tt-metal/
       - run: ls -hal _tt-metal

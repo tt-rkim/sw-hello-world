@@ -28,10 +28,11 @@ ENV TT_METAL_HOME=/home/user/tt-metal
 
 COPY _tt-metal/build/ ./build/
 COPY _tt-metal/runtime/ ./runtime/
+COPY ttnn-*.whl ./
+
+RUN WHEEL_FILENAME=$(ls -1 *.whl) && pip3 install $WHEEL_FILENAME
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
-RUN python3 -m pip install --force-reinstall pip==21.2.4 && python3 -m pip --version
-RUN python3 -m pip install -e . && ls -hal ttnn/ttnn
 RUN python3 -m pip install pytest-repeat
 RUN pytest --collect-only tests/ttnn/unit_tests
 CMD pytest tests/ttnn/unit_tests/operations/ccl/test_ccl_async_TG_llama.py::test_all_reduce_tg_llama -k ff2 --count=5
