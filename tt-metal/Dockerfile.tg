@@ -11,6 +11,9 @@ LABEL org.opencontainers.image.licenses=MIT
 
 RUN apt update && apt install git git-lfs -y --no-install-recommends
 
+# Have to install python packages as root because the venv is owned by root
+RUN python3 -m pip install pytest-repeat
+
 ## add user
 RUN adduser --uid 1000 --shell /bin/bash user
 USER user
@@ -20,8 +23,6 @@ RUN git clone https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION
 WORKDIR /home/user/tt-metal
 
 ENV PYTHONPATH=/home/user/tt-metal
-
-RUN python3 -m pip install pytest-repeat
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
 RUN pytest --collect-only tests/ttnn/unit_tests
