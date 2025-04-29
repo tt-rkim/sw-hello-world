@@ -10,8 +10,6 @@ LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
 LABEL org.opencontainers.image.description="Run a TG smoke test"
 LABEL org.opencontainers.image.licenses=MIT
 
-RUN apt update && apt install git git-lfs -y --no-install-recommends
-
 # Have to install python packages as root because the venv is owned by root
 RUN [ -n "$VIRTUAL_ENV" ] || { echo "Error: VIRTUAL_ENV env var does not exist. Please check tt-metal release Dockerfile"; exit 1; }
 RUN chmod -R 777 $VIRTUAL_ENV
@@ -22,11 +20,17 @@ USER user
 
 RUN git clone https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION /home/user/tt-metal
 
-RUN python3 -m pip install pytest-repeat
-
 WORKDIR /home/user/tt-metal
 
 ENV PYTHONPATH=/home/user/tt-metal
+ENV LD_LIBRARY_PATH=/home/user/tt-metal/build/lib
+ENV TT_METAL_HOME=/home/user/tt-metal
+
+COPY _tt-metal/build/ ./build/
+COPY _tt-metal/runtime/ ./runtime/
+
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
+RUN python3 -m pip install -e .
+RUN python3 -m pip install pytest-repeat
 RUN pytest --collect-only tests/ttnn/unit_tests
 CMD pytest tests/ttnn/unit_tests/operations/ccl/test_ccl_async_TG_llama.py::test_all_reduce_tg_llama -k ff2 --count=5
