@@ -1,5 +1,6 @@
 ARG TT_METAL_VERSION=v0.57.0-rc34
-FROM ghcr.io/tenstorrent/tt-metal/tt-metalium-ubuntu-22.04-release-amd64:${TT_METAL_VERSION} as base
+ARG TT_METAL_DEV_VERSION=latest
+FROM ghcr.io/tenstorrent/tt-metal/tt-metalium/ubuntu-22.04-dev-amd64:${TT_METAL_DEV_VERSION} as base
 
 ARG TT_METAL_VERSION
 
@@ -21,12 +22,11 @@ USER user
 
 RUN git clone https://github.com/tenstorrent/tt-metal --branch $TT_METAL_VERSION /home/user/tt-metal
 
+RUN python3 -m pip install pytest-repeat
+
 WORKDIR /home/user/tt-metal
 
 ENV PYTHONPATH=/home/user/tt-metal
-
-RUN python3 -m pip install pytest-repeat
-RUN python3 -m pip install -r tt_metal/python_env/requirements-dev.txt
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
 RUN pytest --collect-only tests/ttnn/unit_tests
 CMD pytest tests/ttnn/unit_tests/operations/ccl/test_ccl_async_TG_llama.py::test_all_reduce_tg_llama -k ff2 --count=5
