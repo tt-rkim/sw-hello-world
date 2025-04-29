@@ -21,7 +21,7 @@ WORKDIR /home/user/tt-metal
 
 ENV PYTHONPATH=/home/user/tt-metal
 
-RUN pip install pytest-repeat
+RUN python3 -m pip install pytest-repeat
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
 RUN pytest --collect-only tests/ttnn/unit_tests
