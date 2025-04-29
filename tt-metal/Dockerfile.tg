@@ -30,6 +30,7 @@ COPY _tt-metal/build/ ./build/
 COPY _tt-metal/runtime/ ./runtime/
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
+RUN python3 -m pip install --force-reinstall pip==21.2.4
 RUN python3 -m pip install -e .
 RUN python3 -m pip install pytest-repeat
 RUN pytest --collect-only tests/ttnn/unit_tests
