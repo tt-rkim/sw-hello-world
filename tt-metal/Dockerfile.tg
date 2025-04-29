@@ -10,10 +10,6 @@ LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
 LABEL org.opencontainers.image.description="Run a TG smoke test"
 LABEL org.opencontainers.image.licenses=MIT
 
-# Have to install python packages as root because the venv is owned by root
-RUN [ -n "$VIRTUAL_ENV" ] || { echo "Error: VIRTUAL_ENV env var does not exist. Please check tt-metal release Dockerfile"; exit 1; }
-RUN chmod -R 777 $VIRTUAL_ENV
-
 ## add user
 RUN adduser --uid 1000 --shell /bin/bash user
 USER user
@@ -30,7 +26,7 @@ COPY _tt-metal/build/ ./build/
 COPY _tt-metal/runtime/ ./runtime/
 COPY ttnn-*.whl ./
 
-RUN WHEEL_FILENAME=$(ls -1 *.whl) && pip3 install $WHEEL_FILENAME
+RUN WHEEL_FILENAME=$(ls -1 *.whl) && python3 -m pip install $WHEEL_FILENAME
 
 # ARCH_NAME must be set... won't check for now since it doesn't have to be fancy
 RUN python3 -m pip install pytest-repeat
