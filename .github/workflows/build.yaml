@@ -46,31 +46,20 @@ jobs:
             exit 1
           fi
           echo "run-id=$runId" >> "$GITHUB_OUTPUT"
-  build-tg-image:
+  build-images:
     needs: get-build-info
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      # Docker-provided build framework to build against other platforms
-      - uses: ./.github/actions/build-docker-image
-        id: build-docker-image
-        with:
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: tt-metal/Dockerfile.tg
-          build-args: 'TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}'
-          # Doesn't use latest yet... TODO
-          tag: ghcr.io/tt-rkim/sw-hello-world/tg-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}
-  build-6u-image:
-    needs: get-build-info
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        build-config:
+          - dockerfile: tt-metal/Dockerfile.6u
+            image-name: ghcr.io/tt-rkim/sw-hello-world/6u-smoke-test
+          - dockerfile: tt-metal/Dockerfile.tg
+            image-name: ghcr.io/tt-rkim/sw-hello-world/tg-smoke-test
     steps:
       - uses: actions/checkout@v4
       - name: Download artifacts from metal
@@ -82,6 +71,13 @@ jobs:
           # 22.04 artifact... we'll probably need to key on that in the original action in metal
           name: TTMetal_build_any
           run-id: ${{ needs.get-build-info.outputs.run-id }}
+      - name: 🧪 Download Python Wheel
+        uses: actions/download-artifact@v4
+        with:
+          repository: tenstorrent/tt-metal
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: eager-dist-ubuntu-22.04-any
+          run-id: ${{ needs.get-build-info.outputs.run-id }}
       - run: mkdir -p _tt-metal
       - run: tar -xvf ttm_any.tar -C _tt-metal/
       - run: ls -hal _tt-metal
@@ -91,11 +87,11 @@ jobs:
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          dockerfile: tt-metal/Dockerfile.6u
+          dockerfile: ${{ matrix.build-config.dockerfile }}
           # We don't release a dev image every release tag
           # https://github.com/docker/build-push-action/issues/557#issuecomment-1030412477
           build-args: |
             TT_METAL_VERSION=${{ needs.get-build-info.outputs.latest-metal-tag }}
             TT_METAL_DEV_VERSION=latest
           # Doesn't use latest yet... TODO
-          tag: ghcr.io/tt-rkim/sw-hello-world/6u-smoke-test:${{ needs.get-build-info.outputs.latest-metal-tag }}
+          tag: ${{ matrix.build-config.image-name }}:${{ needs.get-build-info.outputs.latest-metal-tag }}

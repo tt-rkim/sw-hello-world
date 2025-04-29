@@ -7,7 +7,7 @@ ARG TT_METAL_VERSION
 ENV DEBIAN_FRONTEND=noninteractive
 
 LABEL org.opencontainers.image.source=https://github.com/tt-rkim/sw-hello-world
-LABEL org.opencontainers.image.description="Run a TG smoke test"
+LABEL org.opencontainers.image.description="Run a 6U WH smoke test"
 LABEL org.opencontainers.image.licenses=MIT
 
 ## add user
